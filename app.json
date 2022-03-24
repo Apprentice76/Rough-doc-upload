@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "doc-uploader",
+    "slug": "doc-uploader",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "doc-uploader"
+}
