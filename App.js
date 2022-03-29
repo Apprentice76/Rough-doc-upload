@@ -6,6 +6,7 @@ export default function App() {
 	const [hasPermission, setHasPermission] = useState(null)
 	const [scanned, setScanned] = useState(false)
 	const [text, setText] = useState('Not yet scanned')
+	const [isCorrect, setIsCorrect] = useState(false)
 
 	const askForCameraPermission = () => {
 		;(async () => {
@@ -46,26 +47,58 @@ export default function App() {
 		)
 	}
 
+	const captureImage = async () => {
+		// No permissions request is necessary for launching the image library
+		// let result = await ImagePicker.launchImageLibraryAsync({
+		// 	mediaTypes: ImagePicker.MediaTypeOptions.All,
+		// 	allowsEditing: true,
+		// 	aspect: [4, 3],
+		// 	quality: 1,
+		// })
+
+		let result = await ImagePicker.launchCameraAsync({
+			allowsEditing: false,
+			aspect: [4, 3],
+			quality: 1,
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+		})
+
+		console.log(result)
+
+		if (!result.cancelled) {
+			setImage(result.uri)
+		}
+	}
+
 	// Return the View
 	return (
 		<View style={styles.container}>
-			<View style={styles.barcodebox}>
-				<BarCodeScanner
-					onBarCodeScanned={
-						scanned ? undefined : handleBarCodeScanned
-					}
-					style={{ height: 400, width: 400 }}
-				/>
-			</View>
-			<Text style={styles.maintext}>{text}</Text>
+			{!isCorrect && (
+				<View style={styles.barcodebox}>
+					<BarCodeScanner
+						onBarCodeScanned={
+							scanned ? undefined : handleBarCodeScanned
+						}
+						style={{ height: 400, width: 400 }}
+					/>
+				</View>
+			)}
+			{/* <Text style={styles.maintext}>{text}</Text> */}
 
-			{scanned && (
-				<Button
-					title={'Scan again?'}
-					onPress={() => setScanned(false)}
-					color='tomato'
-				/>
-            )}
+			{scanned && !isCorrect && (
+				<>
+					<Button
+						title={'Scan again?'}
+						onPress={() => setScanned(false)}
+						color='tomato'
+					/>
+					<Button
+						title={'Done'}
+						onPress={() => setIsCorrect(true)}
+						color='tomato'
+					/>
+				</>
+			)}
 		</View>
 	)
 }
