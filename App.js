@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { Text, View, StyleSheet, Button } from 'react-native'
+import { Text, View, StyleSheet, Button, Image } from 'react-native'
 import { BarCodeScanner } from 'expo-barcode-scanner'
+import * as ImagePicker from 'expo-image-picker'
 
 export default function App() {
 	const [hasPermission, setHasPermission] = useState(null)
 	const [scanned, setScanned] = useState(false)
 	const [text, setText] = useState('Not yet scanned')
-	const [isCorrect, setIsCorrect] = useState(false)
+    const [isCorrect, setIsCorrect] = useState(false)
+    const [image, setImage] = useState(null)
 
 	const askForCameraPermission = () => {
 		;(async () => {
@@ -98,6 +100,26 @@ export default function App() {
 						color='tomato'
 					/>
 				</>
+			)}
+
+			{isCorrect && (
+				<View
+					style={{
+						flex: 1,
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}>
+					<Button
+						title='Take image from camera'
+						onPress={captureImage}
+					/>
+					{image && (
+						<Image
+							source={{ uri: image }}
+							style={{ width: 200, height: 200 }}
+						/>
+					)}
+				</View>
 			)}
 		</View>
 	)
