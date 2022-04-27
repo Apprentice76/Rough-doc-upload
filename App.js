@@ -7,8 +7,9 @@ export default function App() {
 	const [hasPermission, setHasPermission] = useState(null)
 	const [scanned, setScanned] = useState(false)
 	const [text, setText] = useState('Not yet scanned')
-    const [isCorrect, setIsCorrect] = useState(false)
-    const [image, setImage] = useState(null)
+	const [isCorrect, setIsCorrect] = useState(false)
+	const [image, setImage] = useState(null)
+	const [captured, setCaptured] = useState(false)
 
 	const askForCameraPermission = () => {
 		;(async () => {
@@ -21,6 +22,32 @@ export default function App() {
 	useEffect(() => {
 		askForCameraPermission()
 	}, [])
+
+	const uploadImage = async () => {
+		const url = `http:\/\/192.168.43.248:4000\/uploadRaw\/${text}\/identity`
+		if (captured) {
+			const formData = new FormData()
+			// console.log(JSON.stringify(formData))
+			formData.append('raw', {
+				uri: image.uri,
+				name: 'raw.jpg',
+				type: 'image/jpeg',
+			})
+
+			await fetch(url, {
+				method: 'PUT',
+				body: formData,
+				headers: {
+					'content-type': 'multipart/form-data',
+				},
+			})
+				.then((res) => res.json())
+				.then((res) => console.log(res))
+				.catch((err) => {
+					console.log(err.message)
+				})
+		}
+	}
 
 	// What happens when we scan the bar code
 	const handleBarCodeScanned = ({ type, data }) => {
@@ -60,15 +87,17 @@ export default function App() {
 
 		let result = await ImagePicker.launchCameraAsync({
 			allowsEditing: false,
-			aspect: [4, 3],
-			quality: 1,
+			aspect: [16, 9],
+			quality: 0.8,
 			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			base64: true,
 		})
 
-		console.log(result)
+		// console.log(result)
 
 		if (!result.cancelled) {
-			setImage(result.uri)
+			setImage(result)
+			setCaptured(true)
 		}
 	}
 
@@ -85,7 +114,7 @@ export default function App() {
 					/>
 				</View>
 			)}
-			{/* <Text style={styles.maintext}>{text}</Text> */}
+			<Text style={styles.maintext}>{text}</Text>
 
 			{scanned && !isCorrect && (
 				<>
@@ -115,9 +144,12 @@ export default function App() {
 					/>
 					{image && (
 						<Image
-							source={{ uri: image }}
-							style={{ width: 200, height: 200 }}
+							source={{ uri: image.uri }}
+							style={{ width: 350, height: 500 }}
 						/>
+					)}
+					{captured && (
+						<Button title='upload' onPress={uploadImage} />
 					)}
 				</View>
 			)}
