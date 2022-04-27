@@ -24,7 +24,7 @@ export default function App() {
 	}, [])
 
 	const uploadImage = async () => {
-		const url = `http:\/\/192.168.43.248:4000\/uploadRaw\/${text}\/identity`
+		const url = `https:\/\/temp-token-backend.herokuapp.com\/uploadRaw\/${text}\/identity`
 		if (captured) {
 			const formData = new FormData()
 			// console.log(JSON.stringify(formData))
