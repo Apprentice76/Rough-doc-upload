@@ -42,7 +42,10 @@ export default function App() {
 				},
 			})
 				.then((res) => res.json())
-				.then((res) => console.log(res))
+                .then((res) => {
+                    console.log(res)
+                    setIsCorrect(false)
+                })
 				.catch((err) => {
 					console.log(err.message)
 				})
